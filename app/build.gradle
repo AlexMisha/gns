@@ -53,6 +53,9 @@ dependencies {
   kapt 'com.github.bumptech.glide:compiler:4.4.0'
 
   implementation 'com.apollographql.apollo:apollo-runtime:0.4.3'
+
+  compile 'frankiesardo:icepick:3.2.0'
+  provided 'frankiesardo:icepick-processor:3.2.0'
 }
 repositories {
   mavenCentral()
