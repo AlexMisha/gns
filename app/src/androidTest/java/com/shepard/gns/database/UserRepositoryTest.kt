@@ -7,7 +7,6 @@ import com.shepard.gns.database.dao.UserRepository
 import com.shepard.gns.database.entity.User
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import junit.framework.TestCase.assertTrue
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -28,20 +27,20 @@ class UserRepositoryTest {
         db = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getTargetContext(), AppDatabase::class.java)
                 .build()
         userRepository = db.userRepository()
+        Observable.just(arrayListOf(User(name = "shepard"), User(name = "michael"), User(name = "eva")))
+                .subscribeOn(Schedulers.io())
+                .subscribe { userRepository.saveAll(it) }
     }
 
     @After
     @Throws(Exception::class)
     fun tearDown() {
-        db.close()
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun save() {
-        Observable.just(User(name = "shepard"))
+        userRepository.findAll()
                 .subscribeOn(Schedulers.io())
-                .subscribe { userRepository.save(it) }
+                .subscribe({ userRepository.deleteAll(it) }, {
+                    db.close()
+                    throw it
+                }, { db.close() })
     }
 
     @Test
@@ -49,26 +48,21 @@ class UserRepositoryTest {
     fun read() {
         userRepository.findByName("shepard")
                 .subscribeOn(Schedulers.io())
-                .subscribe { assertTrue(it.id == 1L) }
+                .subscribe()
     }
 
     @Test
     @Throws(Exception::class)
     fun update() {
-        userRepository.findByName("shepard")
-                .subscribeOn(Schedulers.io())
-                .subscribe {
-                    it.name = "michael"
-                    userRepository.updateEntity(it)
-                }
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun delete() {
         userRepository.findByName("michael")
                 .subscribeOn(Schedulers.io())
-                .subscribe { userRepository.delete(it) }
+                .subscribe({
+                    it.name = "john"
+                    userRepository.updateEntity(it)
+                }, { throw it }, {
+                    userRepository.findByName("john")
+                            .subscribeOn(Schedulers.io())
+                            .subscribe()
+                })
     }
-
 }

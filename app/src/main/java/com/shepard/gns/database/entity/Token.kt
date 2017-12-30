@@ -13,15 +13,15 @@ data class Token(@ColumnInfo(name = "id")
                  @PrimaryKey(autoGenerate = true)
                  var id: Long = 0,
 
-                 @ColumnInfo(name = " type")
+                 @ColumnInfo(name = "type")
                  var type: TokenType,
 
                  @ColumnInfo(name = "user_id")
-                 var userId: Long = 0,
+                 var userId: Long = 1,
 
                  @ColumnInfo(name = "value")
                  var value: String) {
-    companion object TokenTypeConverter {
+    class TokenTypeConverter {
         @TypeConverter
         fun tokenTypeToLong(tokenType: TokenType): Long = tokenType.ordinal.toLong()
 
