@@ -4,6 +4,9 @@ import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 
+import com.shepard.gns.database.dao.BranchRepository;
+import com.shepard.gns.database.dao.CommitRepository;
+import com.shepard.gns.database.dao.ProjectRepository;
 import com.shepard.gns.database.dao.TokenRepository;
 import com.shepard.gns.database.dao.UserRepository;
 import com.shepard.gns.database.entity.Branch;
@@ -23,4 +26,10 @@ public abstract class AppDatabase extends RoomDatabase {
   public abstract UserRepository userRepository();
 
   public abstract TokenRepository tokenRepository();
+
+  public abstract ProjectRepository projectRepository();
+
+  public abstract BranchRepository branchRepository();
+
+  public abstract CommitRepository commitRepository();
 }
