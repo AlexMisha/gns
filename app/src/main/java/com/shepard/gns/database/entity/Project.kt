@@ -8,7 +8,7 @@ import android.arch.persistence.room.PrimaryKey
  * @author shepard
  * @since 04.01.2018
  */
-@Entity(tableName = "repository")
+@Entity(tableName = "project")
 data class Project(@ColumnInfo(name = "id")
                    @PrimaryKey(autoGenerate = true)
                    var id: Long = 0,
