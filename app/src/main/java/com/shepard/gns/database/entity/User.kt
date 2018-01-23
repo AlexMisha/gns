@@ -15,5 +15,11 @@ data class User(
         var id: Long = 0,
 
         @ColumnInfo(name = "name")
-        var name: String
+        var name: String,
+
+        @ColumnInfo(name = "email")
+        var email: String = "",
+
+        @ColumnInfo(name = "photo_url")
+        var photoUrl: String = ""
 )

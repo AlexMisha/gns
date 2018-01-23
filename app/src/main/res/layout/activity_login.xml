@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+  >
+  <data>
+    <import type="android.arch.persistence.room.util.StringUtil"/>
+    <import type="android.view.View"/>
+    <import type="com.shepard.gns.database.entity.User"/>
+    <variable
+      name="viewModel"
+      type="com.shepard.gns.ui.login.LoginViewModel"
+      />
+  </data>
+  <android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.login.LoginActivity"
+    >
+    <android.support.v7.widget.AppCompatTextView
+      style="@style/Base.TextAppearance.AppCompat"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@{viewModel.user != null ? viewModel.user.email : null}"
+      app:layout_constraintBottom_toTopOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_bias="0.2"
+      tools:text="email: michaelalex600@gmail.com"
+      />
+    <android.support.v7.widget.AppCompatImageView
+      android:id="@+id/photo"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintBottom_toTopOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_bias="0.4"
+      tools:src="@drawable/ic_launcher_background"
+      />
+    <android.support.v7.widget.AppCompatButton
+      android:id="@+id/sign_in"
+      style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:clickable="@{viewModel.isLoggedIn ? false : true}"
+      android:drawableEnd="@drawable/common_google_signin_btn_icon_light"
+      android:drawablePadding="12dp"
+      android:onClick="@{() -> viewModel.doLogin()}"
+      android:text="@string/sign_in_with"
+      android:visibility="@{viewModel.isLoggedIn ? View.GONE : View.VISIBLE}"
+      app:layout_constraintBottom_toTopOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintVertical_bias="0.9"
+      />
+
+  </android.support.constraint.ConstraintLayout>
+</layout>
