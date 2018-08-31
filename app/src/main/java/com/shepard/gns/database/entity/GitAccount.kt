@@ -8,8 +8,8 @@ import androidx.room.ColumnInfo
  * @author shepard
  * @since 28.12.2017
  */
-@Entity(tableName = "user")
-data class User(
+@Entity(tableName = "git_account")
+data class GitAccount(
         @PrimaryKey(autoGenerate = true)
         @ColumnInfo(name = "id")
         var id: Long = 0,

@@ -5,11 +5,10 @@ import com.shepard.gns.database.dao.CommitRepository;
 import com.shepard.gns.database.dao.ProjectRepository;
 import com.shepard.gns.database.dao.TokenRepository;
 import com.shepard.gns.database.dao.UserRepository;
-import com.shepard.gns.database.entity.Branch;
+import com.shepard.gns.database.entity.WatchingBranch;
 import com.shepard.gns.database.entity.Commit;
-import com.shepard.gns.database.entity.Project;
 import com.shepard.gns.database.entity.Token;
-import com.shepard.gns.database.entity.User;
+import com.shepard.gns.database.entity.GitAccount;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
@@ -19,7 +18,7 @@ import androidx.room.TypeConverters;
  * @author shepard
  * @since 24.12.2017
  */
-@Database(entities = {User.class, Token.class, Project.class, Branch.class,
+@Database(entities = {GitAccount.class, Token.class, WatchingBranch.class,
         Commit.class}, version = 1)
 @TypeConverters(Token.TokenTypeConverter.class)
 public abstract class AppDatabase extends RoomDatabase {

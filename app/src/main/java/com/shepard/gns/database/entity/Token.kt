@@ -10,21 +10,21 @@ import androidx.room.PrimaryKey
  * @author shepard
  * @since 21.12.2017
  */
-@Entity(tableName = "token", foreignKeys = [(ForeignKey(entity = User::class,
+@Entity(tableName = "token", foreignKeys = [(ForeignKey(entity = GitAccount::class,
         parentColumns = [("id")],
-        childColumns = [("user_id")]))])
+        childColumns = [("account_id")]))])
 data class Token(@ColumnInfo(name = "id")
                  @PrimaryKey(autoGenerate = true)
                  var id: Long = 0,
 
+                 @ColumnInfo(name = "value")
+                 var value: String,
+
                  @ColumnInfo(name = "type")
                  var type: TokenType,
 
-                 @ColumnInfo(name = "user_id")
-                 var userId: Long = 1,
-
-                 @ColumnInfo(name = "value")
-                 var value: String) {
+                 @ColumnInfo(name = "account_id")
+                 var accountId: Long = 1) {
     class TokenTypeConverter {
         @TypeConverter
         fun tokenTypeToLong(tokenType: TokenType): Long = tokenType.ordinal.toLong()
