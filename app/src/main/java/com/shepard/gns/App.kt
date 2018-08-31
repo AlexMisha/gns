@@ -1,7 +1,7 @@
 package com.shepard.gns
 
 import android.app.Application
-import android.arch.persistence.room.Room
+import androidx.room.Room
 import com.shepard.gns.database.AppDatabase
 
 /**

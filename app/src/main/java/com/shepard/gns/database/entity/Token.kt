@@ -1,6 +1,10 @@
 package com.shepard.gns.database.entity
 
-import android.arch.persistence.room.*
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.TypeConverter
+import androidx.room.ColumnInfo
+import androidx.room.PrimaryKey
 
 /**
  * @author shepard

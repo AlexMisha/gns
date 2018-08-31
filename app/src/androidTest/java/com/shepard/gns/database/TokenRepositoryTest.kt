@@ -1,16 +1,13 @@
 package com.shepard.gns.database
 
-import android.arch.persistence.room.Room
-import android.support.test.InstrumentationRegistry
-import android.support.test.runner.AndroidJUnit4
+import androidx.room.Room
+import androidx.test.InstrumentationRegistry
+import androidx.test.runner.AndroidJUnit4
 import com.shepard.gns.database.dao.TokenRepository
 import com.shepard.gns.database.dao.UserRepository
 import com.shepard.gns.database.entity.Token
 import com.shepard.gns.database.entity.TokenType
 import com.shepard.gns.database.entity.User
-import io.reactivex.Flowable
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
