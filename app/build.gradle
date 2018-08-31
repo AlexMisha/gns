@@ -1,93 +1,82 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.apollographql.android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
-  compileSdkVersion 26
-  defaultConfig {
-    applicationId "com.shepard.gns"
-    minSdkVersion 21
-    targetSdkVersion 26
-    versionCode 1
-    versionName "1.0"
-    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    javaCompileOptions {
-      annotationProcessorOptions {
-        arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
-      }
-      annotationProcessorOptions.includeCompileClasspath = true
-    }
-  }
-  dataBinding.enabled = true
-  buildTypes {
-    release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-    }
-  }
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
-  sourceSets {
-    test.java.srcDirs += 'src/test/java'
-    androidTest.java.srcDirs += 'src/androidTest/java'
-    androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
-  }
-
-  afterEvaluate {
-    android.sourceSets.all { sourceSet ->
-      if (!sourceSet.name.startsWith('test') || !sourceSet.name.startsWith('androidTest')) {
-        sourceSet.kotlin.setSrcDirs([])
-      }
+    defaultConfig {
+        applicationId "com.shepard.gns"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+            annotationProcessorOptions.includeCompileClasspath = true
+        }
     }
-  }
-  compileOptions {
-    targetCompatibility 1.8
-    sourceCompatibility 1.8
-  }
+
+    dataBinding.enabled = true
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/java'
+        androidTest.java.srcDirs += 'src/androidTest/java'
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
+
+    afterEvaluate {
+        android.sourceSets.all { sourceSet ->
+            if (!sourceSet.name.startsWith('test') || !sourceSet.name.startsWith('androidTest')) {
+                sourceSet.kotlin.setSrcDirs([])
+            }
+        }
+    }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
-  implementation fileTree(dir: 'libs', include: ['*.jar'])
-  implementation 'com.android.support:appcompat-v7:26.1.0'
-  implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-  testImplementation 'junit:junit:4.12'
-  androidTestImplementation 'com.android.support.test:runner:1.0.1'
-  androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-  compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-  compile 'org.jetbrains.anko:anko-support-v4:0.10.3'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "androidx.appcompat:appcompat:$rootProject.androidxVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
+    implementation "androidx.cardview:cardview:$rootProject.androidxVersion"
+    implementation "androidx.recyclerview:recyclerview:$rootProject.androidxVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$rootProject.kotlinVersion"
+    kapt "com.android.databinding:compiler:$rootProject.dataBindingVersion"
 
-  kapt "com.android.databinding:compiler:3.0.1"
-  implementation 'com.android.support:cardview-v7:26.1.0'
-  implementation 'com.android.support:recyclerview-v7:26.1.0'
+    testImplementation "junit:junit:$rootProject.junitVersion"
+    androidTestImplementation "androidx.test:runner:$rootProject.androidxVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.androidxVersion"
 
-  implementation "com.squareup.retrofit2:retrofit:2.3.0"
-  implementation "com.squareup.retrofit2:adapter-rxjava2:2.3.0"
-  implementation "com.squareup.retrofit2:converter-gson:2.3.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.androidxVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata:$rootProject.androidxVersion"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$rootProject.androidxVersion"
 
-  implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
+    compile "androidx.room:room-runtime:$rootProject.androidxVersion"
+    kapt "androidx.room:room-compiler:$rootProject.androidxVersion"
+    testImplementation "androidx.room:room-testing:$rootProject.androidxVersion"
 
-  compile "android.arch.persistence.room:runtime:1.0.0"
-  kapt "android.arch.persistence.room:compiler:1.0.0"
-  implementation "android.arch.persistence.room:rxjava2:1.0.0"
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
 
-  implementation 'com.github.kbiakov:CodeView-android:1.3.1'
+    kapt "com.github.bumptech.glide:compiler:$rootProject.glideCompilerVersion"
+    implementation "com.github.bumptech.glide:compiler:$rootProject.glideCompilerVersion"
+    compile "com.github.bumptech.glide:glide:$rootProject.glideVersion"
+    annotationProcessor "com.github.bumptech.glide:compiler:$rootProject.glideCompilerVersion"
 
-  compile 'com.google.dagger:dagger:2.13'
-  kapt 'com.google.dagger:dagger-compiler:2.13'
-  provided 'org.glassfish:javax.annotation:10.0-b28'
-
-  kapt 'com.github.bumptech.glide:compiler:4.4.0'
-  implementation 'com.github.bumptech.glide:compiler:4.4.0'
-  compile 'com.github.bumptech.glide:glide:4.2.0'
-  annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
-
-  implementation 'com.apollographql.apollo:apollo-runtime:0.4.3'
-
-  compile 'frankiesardo:icepick:3.2.0'
-  provided 'frankiesardo:icepick-processor:3.2.0'
+    compile "frankiesardo:icepick:$rootProject.icepickVersion"
+    provided "frankiesardo:icepick-processor:$rootProject.icepickVersion"
 }
-repositories {
-  mavenCentral()
-}
-
-apply plugin: 'kotlin-android-extensions'
