@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "95fc8a49b5cccb2d9724a08854cdd2e8",
+    "identityHash": "eed472aa7ffb7e0ed3cecc9f225c864b",
     "entities": [
       {
-        "tableName": "user",
+        "tableName": "git_account",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL)",
         "fields": [
           {
@@ -32,12 +32,18 @@
       },
       {
         "tableName": "token",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `type` INTEGER NOT NULL, `user_id` INTEGER NOT NULL, `value` TEXT NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `user`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `value` TEXT NOT NULL, `type` INTEGER NOT NULL, `account_id` INTEGER NOT NULL, FOREIGN KEY(`account_id`) REFERENCES `git_account`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -47,15 +53,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "userId",
-            "columnName": "user_id",
+            "fieldPath": "accountId",
+            "columnName": "account_id",
             "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "value",
-            "columnName": "value",
-            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -68,11 +68,11 @@
         "indices": [],
         "foreignKeys": [
           {
-            "table": "user",
+            "table": "git_account",
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
-              "user_id"
+              "account_id"
             ],
             "referencedColumns": [
               "id"
@@ -81,8 +81,8 @@
         ]
       },
       {
-        "tableName": "project",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `avatar_url` TEXT NOT NULL, `is_private` INTEGER NOT NULL, `license` TEXT NOT NULL, `forks` INTEGER NOT NULL, `owner` TEXT NOT NULL)",
+        "tableName": "watching_branch",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `checked` INTEGER NOT NULL, `latest_commit_date` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -97,33 +97,15 @@
             "notNull": true
           },
           {
-            "fieldPath": "avatarUrl",
-            "columnName": "avatar_url",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "isPrivate",
-            "columnName": "is_private",
+            "fieldPath": "checked",
+            "columnName": "checked",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "license",
-            "columnName": "license",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "forks",
-            "columnName": "forks",
+            "fieldPath": "latestCommitDate",
+            "columnName": "latest_commit_date",
             "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "owner",
-            "columnName": "owner",
-            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -137,63 +119,13 @@
         "foreignKeys": []
       },
       {
-        "tableName": "branch",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `project_id` INTEGER NOT NULL, FOREIGN KEY(`project_id`) REFERENCES `project`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
-        "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "name",
-            "columnName": "name",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "projectId",
-            "columnName": "project_id",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "columnNames": [
-            "id"
-          ],
-          "autoGenerate": true
-        },
-        "indices": [],
-        "foreignKeys": [
-          {
-            "table": "project",
-            "onDelete": "NO ACTION",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "project_id"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
-      },
-      {
         "tableName": "commit",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `message` TEXT NOT NULL, `author` TEXT NOT NULL, `author_avatar_url` TEXT NOT NULL, `project_id` INTEGER NOT NULL, `branch_id` INTEGER NOT NULL, FOREIGN KEY(`project_id`) REFERENCES `project`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`branch_id`) REFERENCES `branch`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `message` TEXT NOT NULL, `committer_name` TEXT NOT NULL, `committer_photo_url` TEXT NOT NULL, `name` TEXT NOT NULL, `branch_id` INTEGER NOT NULL, `date` INTEGER NOT NULL, FOREIGN KEY(`branch_id`) REFERENCES `watching_branch`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "sha",
-            "columnName": "name",
-            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -203,26 +135,32 @@
             "notNull": true
           },
           {
-            "fieldPath": "author",
-            "columnName": "author",
+            "fieldPath": "committerName",
+            "columnName": "committer_name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "authorAvatarUrl",
-            "columnName": "author_avatar_url",
+            "fieldPath": "committerPhotoUrl",
+            "columnName": "committer_photo_url",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "projectId",
-            "columnName": "project_id",
-            "affinity": "INTEGER",
+            "fieldPath": "sha",
+            "columnName": "name",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
             "fieldPath": "branchId",
             "columnName": "branch_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -236,18 +174,7 @@
         "indices": [],
         "foreignKeys": [
           {
-            "table": "project",
-            "onDelete": "NO ACTION",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "project_id"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
-          {
-            "table": "branch",
+            "table": "watching_branch",
             "onDelete": "NO ACTION",
             "onUpdate": "NO ACTION",
             "columns": [
@@ -262,7 +189,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"95fc8a49b5cccb2d9724a08854cdd2e8\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"eed472aa7ffb7e0ed3cecc9f225c864b\")"
     ]
   }
 }

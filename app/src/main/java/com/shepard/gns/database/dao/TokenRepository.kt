@@ -30,7 +30,7 @@ interface TokenRepository {
     @Query("select * from token where id = :id limit 1")
     fun findById(id: Long): LiveData<Token>
 
-    @Query("select * from token where account_id = :account_id limit 1")
+    @Query("select * from token where account_id = :accountId limit 1")
     fun findByAccountId(accountId: Long): LiveData<Token>
 
     @Update

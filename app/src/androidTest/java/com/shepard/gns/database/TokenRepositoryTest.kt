@@ -4,12 +4,13 @@ import androidx.room.Room
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import com.shepard.gns.database.dao.TokenRepository
-import com.shepard.gns.database.dao.UserRepository
+import com.shepard.gns.database.dao.GitAccountRepository
 import com.shepard.gns.database.entity.Token
 import com.shepard.gns.database.entity.TokenType
-import com.shepard.gns.database.entity.User
+import com.shepard.gns.database.entity.GitAccount
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotBe
 import org.junit.After
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,78 +23,43 @@ import org.junit.runner.RunWith
 class TokenRepositoryTest {
     private lateinit var db: AppDatabase
     private lateinit var tokenRepository: TokenRepository
-    private lateinit var userRepository: UserRepository
+    private lateinit var gitAccountRepository: GitAccountRepository
 
     @Before
-    @Throws(Exception::class)
     fun setUp() {
         db = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getTargetContext(), AppDatabase::class.java)
                 .build()
-        tokenRepository = db.tokenRepository()
-        userRepository = db.userRepository()
-
-        Observable.just(User(name = "alice"))
-                .subscribeOn(Schedulers.io())
-                .subscribe({ userRepository.save(it) }, { throw it }, {
-                    userRepository.findByName("alice")
-                            .subscribeOn(Schedulers.io())
-                            .subscribe {
-                                Observable.just(arrayListOf(
-                                        Token(type = TokenType.GITHUB, userId = it.id
-                                                , value = "SlAV32hkKG"),
-                                        Token(type = TokenType.GITLAB, userId = it.id
-                                                , value = "8xLOxBtZp8")))
-                                        .subscribeOn(Schedulers.io())
-                                        .subscribe { tokenRepository.saveAll(it) }
-                            }
-                })
+        gitAccountRepository = db.gitAccountRepository().apply { save(GitAccount(name = "alice")) }
+        tokenRepository = db.tokenRepository().apply {
+            gitAccountRepository.findAll().observeForever {
+                val account = it.single()
+                save(Token(type = TokenType.GITHUB, accountId = account.id, value = "SlAV32hkKG"))
+            }
+        }
     }
 
     @After
-    @Throws(Exception::class)
     fun tearDown() {
-        tokenRepository.findAll()
-                .subscribeOn(Schedulers.io())
-                .subscribe({ tokenRepository.deleteAll(it) }, {
-                    db.close()
-                    throw it
-                }, { db.close() })
+        gitAccountRepository.findAll().observeForever { gitAccountRepository.deleteAll(it) }
+        tokenRepository.findAll().observeForever { tokenRepository.deleteAll(it) }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun findByTokenType() {
-        tokenRepository.findByTokenType(TokenType.GITHUB)
-                .subscribeOn(Schedulers.io())
-                .flatMap { Flowable.fromIterable(it) }
-                .subscribe { assertTrue(it.value == "SlAV32hkKG") }
-
-        tokenRepository.findByTokenType(TokenType.GITLAB)
-                .subscribeOn(Schedulers.io())
-                .flatMap { Flowable.fromIterable(it) }
-                .subscribe { assertTrue(it.value == "8xLOxBtZp8") }
+    fun find_token_by_account_id_success() {
+        gitAccountRepository.findAll().observeForever {
+            val account = it.single()
+            tokenRepository.findByAccountId(account.id).observeForever {
+                it shouldNotBe null
+                it.type shouldBe TokenType.GITHUB
+                it.value shouldBe "SlAV32hkKG"
+            }
+        }
     }
 
     @Test
-    @Throws(Exception::class)
-    fun updateEntity() {
-        var id: Long
-
-        userRepository.findByName("alice")
-                .subscribeOn(Schedulers.io())
-                .subscribe {
-                    id = it.id
-                    tokenRepository.findByTokenTypeAndUserId(TokenType.GITHUB, id)
-                            .subscribeOn(Schedulers.io())
-                            .subscribe({
-                                it.value = "8xLOxDtZp8"
-                                tokenRepository.updateEntity(it)
-                            }, { throw it }, {
-                                tokenRepository.findByTokenTypeAndUserId(TokenType.GITHUB, id)
-                                        .subscribeOn(Schedulers.io())
-                                        .subscribe { assertTrue(it.value == "8xLOxDtZp8") }
-                            })
-                }
+    fun find_token_by_account_id_failure() {
+        tokenRepository.findByAccountId(345L).observeForever {
+            it shouldBe null
+        }
     }
-
 }
