@@ -34,4 +34,7 @@ interface CommitRepository {
 
     @Delete
     fun deleteAll(entities: List<Commit>)
+
+    @Query("select * from `commit` where branch_id = :branchId")
+    fun syncFindByBranchId(branchId: Long): List<Commit>
 }

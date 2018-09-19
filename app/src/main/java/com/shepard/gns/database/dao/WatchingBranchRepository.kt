@@ -31,4 +31,7 @@ interface WatchingBranchRepository {
 
     @Delete
     fun deleteAll(entities: List<WatchingBranch>)
+
+    @Query("select * from watching_branch")
+    fun syncFindAll(): List<WatchingBranch>
 }
