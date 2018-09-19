@@ -3,14 +3,13 @@ package com.shepard.gns.database
 import androidx.room.Room
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
-import com.shepard.gns.database.dao.TokenRepository
 import com.shepard.gns.database.dao.GitAccountRepository
+import com.shepard.gns.database.dao.TokenRepository
+import com.shepard.gns.database.entity.GitAccount
 import com.shepard.gns.database.entity.Token
 import com.shepard.gns.database.entity.TokenType
-import com.shepard.gns.database.entity.GitAccount
-import io.kotlintest.shouldBe
-import io.kotlintest.shouldNotBe
 import org.junit.After
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,38 +27,34 @@ class TokenRepositoryTest {
     @Before
     fun setUp() {
         db = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getTargetContext(), AppDatabase::class.java)
+                .allowMainThreadQueries()
                 .build()
-        gitAccountRepository = db.gitAccountRepository().apply { save(GitAccount(name = "alice")) }
-        tokenRepository = db.tokenRepository().apply {
-            gitAccountRepository.findAll().observeForever {
-                val account = it.single()
-                save(Token(type = TokenType.GITHUB, accountId = account.id, value = "SlAV32hkKG"))
-            }
-        }
+        gitAccountRepository = db.gitAccountRepository()
+        tokenRepository = db.tokenRepository()
     }
 
     @After
     fun tearDown() {
-        gitAccountRepository.findAll().observeForever { gitAccountRepository.deleteAll(it) }
-        tokenRepository.findAll().observeForever { tokenRepository.deleteAll(it) }
+        db.clearAllTables()
     }
 
     @Test
     fun find_token_by_account_id_success() {
-        gitAccountRepository.findAll().observeForever {
-            val account = it.single()
-            tokenRepository.findByAccountId(account.id).observeForever {
-                it shouldNotBe null
-                it.type shouldBe TokenType.GITHUB
-                it.value shouldBe "SlAV32hkKG"
-            }
-        }
+        gitAccountRepository.save(GitAccount(name = "alice"))
+        val account = gitAccountRepository.synсFindAll().single()
+        tokenRepository.save(Token(type = TokenType.GITHUB, accountId = account.id, value = "SlAV32hkKG"))
+
+        val token = tokenRepository.syncFindByAccountId(account.id)
+
+        assertNotNull(token)
+        assertEquals(TokenType.GITHUB, token.type)
+        assertEquals("SlAV32hkKG", token.value)
     }
 
     @Test
     fun find_token_by_account_id_failure() {
-        tokenRepository.findByAccountId(345L).observeForever {
-            it shouldBe null
-        }
+        val token = tokenRepository.syncFindByAccountId(345L)
+
+        assertNull(token)
     }
 }

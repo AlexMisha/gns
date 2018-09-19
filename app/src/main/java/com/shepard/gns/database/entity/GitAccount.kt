@@ -1,8 +1,8 @@
 package com.shepard.gns.database.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.ColumnInfo
 
 /**
  * @author shepard

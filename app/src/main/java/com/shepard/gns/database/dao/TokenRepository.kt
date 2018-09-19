@@ -1,15 +1,8 @@
 package com.shepard.gns.database.dao
 
 import androidx.lifecycle.LiveData
+import androidx.room.*
 import com.shepard.gns.database.entity.Token
-import com.shepard.gns.database.entity.TokenType
-
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import androidx.room.Update
 
 /**
  * @author shepard
@@ -41,4 +34,7 @@ interface TokenRepository {
 
     @Delete
     fun deleteAll(entities: List<Token>)
+
+    @Query("select * from token where account_id = :accountId limit 1")
+    fun syncFindByAccountId(accountId: Long): Token
 }
