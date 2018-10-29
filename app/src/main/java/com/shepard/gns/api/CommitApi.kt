@@ -11,14 +11,14 @@ import retrofit2.Call
 interface CommitApi {
 
     /**
-     * The commit by id
-     * @param id unique identifier of commit
+     * The commit by sha
+     * @param sha check sum of commit
      * @return Call instance
      */
-    fun getCommitBy(id: Long): Call<Commit>
+    fun getCommitBy(sha: String): Call<Commit>
 
     /**
-     * The list of commits by branch id
+     * The list of commits by branchid
      * @param branchId unique identifier of branch
      * @return Call instance
      */
