@@ -1,6 +1,10 @@
 package com.shepard.gns.database.entity
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverter
 
 /**
  * @author shepard
@@ -9,18 +13,20 @@ import androidx.room.*
 @Entity(tableName = "token", foreignKeys = [(ForeignKey(entity = GitAccount::class,
         parentColumns = [("id")],
         childColumns = [("account_id")]))])
-data class Token(@ColumnInfo(name = "id")
-                 @PrimaryKey(autoGenerate = true)
-                 var id: Long = 0,
+data class Token(
+    @ColumnInfo(name = "id")
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0,
 
-                 @ColumnInfo(name = "value")
-                 var value: String,
+    @ColumnInfo(name = "value")
+    var value: String,
 
-                 @ColumnInfo(name = "type")
-                 var type: TokenType,
+    @ColumnInfo(name = "type")
+    var type: TokenType,
 
-                 @ColumnInfo(name = "account_id")
-                 var accountId: Long = 1) {
+    @ColumnInfo(name = "account_id")
+    var accountId: Long = 1
+) {
     class TokenTypeConverter {
         @TypeConverter
         fun tokenTypeToLong(tokenType: TokenType): Long = tokenType.ordinal.toLong()

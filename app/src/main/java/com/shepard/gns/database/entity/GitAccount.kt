@@ -10,10 +10,10 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "git_account")
 data class GitAccount(
-        @PrimaryKey(autoGenerate = true)
-        @ColumnInfo(name = "id")
-        var id: Long = 0,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    var id: Long = 0,
 
-        @ColumnInfo(name = "name")
-        var name: String
+    @ColumnInfo(name = "name")
+    var name: String
 )
