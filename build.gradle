@@ -41,6 +41,7 @@ allprojects {
         maven { url "https://clojars.org/repo/" }
         maven { url "https://maven.google.com" }
     }
+    apply from: "$rootDir/ktlint.gradle"
 }
 
 task clean(type: Delete) {
